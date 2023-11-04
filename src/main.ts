@@ -3,7 +3,7 @@ import { Cube } from "./cube";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
-	75,
+	100,
 	window.innerWidth / window.innerHeight,
 	0.1,
 	1000
@@ -16,7 +16,10 @@ document.body.appendChild(renderer.domElement);
 const cube = new Cube();
 scene.add(cube);
 
-camera.position.z = 5;
+camera.position.x = 4
+camera.position.y = 4
+
+camera.lookAt(cube.position)
 
 function animate() {
 	requestAnimationFrame(animate);

@@ -53,9 +53,9 @@ export class Cube extends THREE.Object3D {
 	public constructor() {
 		super();
 		let i = 0;
-		for (let z = -1; z <= 1; z++) {
+		for (let y = -1; y <= 1; y++) {
 			for (let x = -1; x <= 1; x++) {
-				for (let y = -1; y <= 1; y++) {
+				for (let z = 1; z >= -1; z--) {
 					if(CUBIES[i] != "S") {
 						
 						const cubie = this.createCubie(CUBIES[i].split("") as FaceColor[], new THREE.Vector3(x, y, z))
@@ -74,7 +74,7 @@ export class Cube extends THREE.Object3D {
 		faces: FaceColor[],
 		offset: THREE.Vector3
 	): THREE.Object3D {
-		offset.multiplyScalar(Math.sqrt(CUBIE_SIZE * CUBIE_SIZE * 2));
+		offset.multiplyScalar(Math.sqrt(CUBIE_SIZE * CUBIE_SIZE + 0.5));
 		const cubie = new THREE.Object3D();
 		for (const faceColor of faces) {
 			const geometry = new THREE.PlaneGeometry(CUBIE_SIZE, CUBIE_SIZE);
