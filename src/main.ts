@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { Cube } from "./cube";
+import * as TWEEN from '@tweenjs/tween.js'
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -27,7 +28,10 @@ function animate() {
 	// cube.rotation.x += 0.01;
 	// cube.rotation.y += 0.01;
 
+	TWEEN.update()
+	
 	renderer.render(scene, camera);
 }
 
 animate();
+cube.applyMove("R")
