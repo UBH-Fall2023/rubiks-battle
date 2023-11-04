@@ -1,3 +1,9 @@
+# To run locally
+1. clone git repo
+2. navigate to file
+3. ```npm install```
+
+
 # UB Hacking Fall 2023 Rules 
 - Teams can consist of between 1 and 4 people.
 - To have your submission be considered for judging, you must submit a 2-5 minute video along with your project. Try to keep it as concise as possible!
@@ -10,3 +16,5 @@
 - Projects can not have been submitted to another event, including other hackathons this weekend.
 - [Code of Conduct](https://drive.google.com/file/d/1RH_TtRu6EOHSbOoiSj2h1Q4jswtVILzE/view)
 - [MLH Code of Conduct](https://static.mlh.io/docs/mlh-code-of-conduct.pdf)
+
+
