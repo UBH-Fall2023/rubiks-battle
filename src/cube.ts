@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import * as TWEEN from "@tweenjs/tween.js";
+import * as TWEEN from "./tween.ts";
 import { degToRad } from "three/src/math/MathUtils";
 
 const CUBIE_SIZE = 1;
@@ -48,9 +48,35 @@ const CUBIES = [
 	"wg",
 	"wgr",
 ];
+const AXES = {
+	x: new THREE.Vector3(1, 0, 0),
+	y: new THREE.Vector3(0, 1, 0),
+	z: new THREE.Vector3(0, 0, 1),
+};
 
 const MOVES = {
-	R: { axis: "z", selector: (el) => (el.offset.z > 0), rotation: 90 },
+	// Normal Moves
+	R: { axis: "z", selector: (el) => el.offset.z < 0, rotation: 90 },
+	L: { axis: "z", selector: (el) => el.offset.z > 0, rotation: -90 },
+	F: { axis: "x", selector: (el) => el.offset.x > 0, rotation: -90 },
+	B: { axis: "x", selector: (el) => el.offset.x < 0, rotation: 90 },
+	U: { axis: "y", selector: (el) => el.offset.y > 0, rotation: -90 },
+	D: { axis: "y", selector: (el) => el.offset.y < 0, rotation: 90 },
+	// Fat moves
+	r: { axis: "z", selector: (el) => el.offset.z <= 0, rotation: 90 },
+	l: { axis: "z", selector: (el) => el.offset.z >= 0, rotation: -90 },
+	f: { axis: "x", selector: (el) => el.offset.x >= 0, rotation: -90 },
+	b: { axis: "x", selector: (el) => el.offset.x <= 0, rotation: 90 },
+	u: { axis: "y", selector: (el) => el.offset.y >= 0, rotation: -90 },
+	d: { axis: "y", selector: (el) => el.offset.y <= 0, rotation: 90 },
+	// Slice moves
+	E: { axis: "y", selector: (el) => el.offset.y == 0, rotation: 90 },
+	M: { axis: "z", selector: (el) => el.offset.z == 0, rotation: -90 },
+	S: { axis: "x", selector: (el) => el.offset.x == 0, rotation: 90 },
+	// Rotations
+	y: { axis: "y", selector: (el) => true, rotation: 90 },
+	z: { axis: "z", selector: (el) => true, rotation: -90 },
+	x: { axis: "x", selector: (el) => true, rotation: 90 },
 };
 
 export interface MoveData {
@@ -58,8 +84,14 @@ export interface MoveData {
 	selector: (_: Cubie) => boolean;
 	rotation: number;
 }
-export type Move = `${keyof typeof MOVES}${"'" | ""}`;
+export type Move = `${keyof typeof MOVES}${"'" | "" | "2"}`;
 export type FaceColor = "w" | "y" | "o" | "r" | "g" | "b";
+
+function wait(time) {
+	return new Promise((resolve) => {
+		setTimeout(resolve, time);
+	});
+}
 
 export class Cube extends THREE.Object3D {
 	public constructor() {
@@ -81,29 +113,47 @@ export class Cube extends THREE.Object3D {
 		}
 	}
 
-	public applyMove(move: Move) {
+	public applyMove(move: Move, duration: number) {
 		const moveData = MOVES[move[0]];
-		const rot = moveData.rotation * (move.endsWith("'") ? -1 : 1);
-		const ax = moveData.axis;
-		this.children.filter(moveData.selector).forEach((cubie) => {
-			new TWEEN.Tween(cubie.rotation)
-				.to({ [ax]: cubie.rotation[ax] + degToRad(rot) }, 1000)
-				.easing(TWEEN.Easing.Quadratic.InOut)
-				.start();
+		// if move has ' rotate opposite way, if move has "2" rotate twice
+		const deg = degToRad(
+			moveData.rotation *
+				(move.endsWith("'") ? -1 : 1) *
+				(move.endsWith("2") ? 2 : 1)
+		);
+		const ax = AXES[moveData.axis];
+		(this.children as Cubie[]).filter(moveData.selector).forEach((cubie) => {
+			cubie.offset.applyAxisAngle(ax, deg);
+			cubie.offset.round();
+
+			// really hacky solution to get rotation to work
+			// Basically it creates a duplicate rotation Euler and uses that value to set rotation
+			// const rotation =  new Cubie([], new THREE.Vector3()).copy(cubie).rotateOnWorldAxis(ax, deg)
+
+			TWEEN.Tween(cubie, duration, ax, deg);
 		});
+	}
+
+	public async applyMoves(moves: Move[], delay: number = 400) {
+		for (const move of moves) {
+			this.applyMove(move, delay / 2);
+			await wait(delay);
+		}
 	}
 }
 
-class Cubie extends THREE.Object3D {
-	public readonly offset;
+export class Cubie extends THREE.Object3D {
+	public offset: THREE.Vector3;
+	public faces: FaceColor[];
 
-	public constructor(
-		faces: FaceColor[],
-		offset: THREE.Vector3
-	) {
-		super()
+	public constructor(faces: FaceColor[], offset: THREE.Vector3) {
+		super();
+		// set this.offset to normalized offset
+		// (its not actually normalized i mean all its coords are 1 or 0 i forgot what this is called tho)
+		this.offset = new THREE.Vector3().copy(offset);
+		this.faces = faces;
+
 		offset.multiplyScalar(Math.sqrt(CUBIE_SIZE * CUBIE_SIZE + 0.5));
-		this.offset = offset
 		for (const faceColor of faces) {
 			const geometry = new THREE.PlaneGeometry(CUBIE_SIZE, CUBIE_SIZE);
 			const material = new THREE.MeshBasicMaterial({

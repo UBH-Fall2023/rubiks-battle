@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { Cube } from "./cube";
-import * as TWEEN from '@tweenjs/tween.js'
+import { Cube, Move } from "./cube";
+import * as TWEEN from './tween.ts'
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -34,4 +34,5 @@ function animate() {
 }
 
 animate();
-cube.applyMove("R")
+
+cube.applyMoves("D2 B R2 F2 U2 R2 U2 B' D2 U2 L2 U2 L D' U B L' F' U2 F2 R2".split(" ") as Move[], 1000)
