@@ -7,6 +7,7 @@
 
 import { clamp } from "three/src/math/MathUtils";
 import { Cubie } from "./three/cube";
+import * as MAIN from "./three/main"
 
 export let tweeners: {"self": tweener[], "opponent": tweener[]} = {"self": [], "opponent": []};
 
@@ -43,7 +44,8 @@ export function update() {
     const tw = tweener[0];
     if (!tw.startTime) tw.startTime = performance.now()
     // t is a number between 0 and 1
-    let t = clamp((performance.now() - tw.startTime) / tw.duration, 0, 1);
+		const dur = tw.duration / tweener.length
+    let t = clamp((performance.now() - tw.startTime) / dur, 0, 1);
     if (tweener.length > 2) t = 1;
     const angle = tw.angle * t;
     for (const cubie of tw.cubies) {
@@ -54,6 +56,9 @@ export function update() {
     tw.lastAngle = -angle;
     if (t == 1) {
       tweener.shift()
+			if(tweener.length == 0) {
+				MAIN.checkSolved()
+			}
     }
   }
 }

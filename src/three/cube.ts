@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import * as TWEEN from "../tween";
-import { degToRad } from "three/src/math/MathUtils";
 
 const CUBIE_SIZE = 1;
 const CUBIE_COLORS = {
@@ -190,6 +189,7 @@ export class Cube extends THREE.Object3D {
 
 export class Cubie extends THREE.Object3D {
 	public offset: THREE.Vector3;
+	public initialOffset: THREE.Vector3;
 	public faces: FaceColor[];
 
 	public constructor(faces: FaceColor[], offset: THREE.Vector3) {
@@ -197,6 +197,8 @@ export class Cubie extends THREE.Object3D {
 		// set this.offset to normalized offset
 		// (its not actually normalized i mean all its coords are 1 or 0 i forgot what this is called tho)
 		this.offset = new THREE.Vector3().copy(offset);
+		this.initialOffset = new THREE.Vector3().copy(offset);
+
 		this.faces = faces;
 
 		offset.multiplyScalar(Math.sqrt(CUBIE_SIZE * CUBIE_SIZE + 0.5));

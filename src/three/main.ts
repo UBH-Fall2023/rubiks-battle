@@ -1,9 +1,7 @@
 import * as THREE from "three";
-import { Cube, KEYBOARD_MAPPINGS, Move } from "./cube";
+import { Cube, Cubie, KEYBOARD_MAPPINGS, Move } from "./cube";
 import * as TWEEN from "../tween";
 import { writeTurn } from "../index";
-
-
 
 const CANVAS = document.querySelector("#c") as HTMLCanvasElement;
 
@@ -28,8 +26,8 @@ const opponentCamera = new THREE.PerspectiveCamera(
 	1000
 );
 
-const cube = new Cube("self");
-const opponentCube = new Cube("opponent");
+let cube = new Cube("self");
+let opponentCube = new Cube("opponent");
 scene.add(cube);
 opponentScene.add(opponentCube);
 
@@ -66,24 +64,56 @@ function render() {
 	renderer.setScissorTest(true);
 
 	renderSceneInfo(document.getElementById("main-cube"), scene, camera);
-	renderSceneInfo(document.getElementById("opponent-cube"), opponentScene, opponentCamera);
+	renderSceneInfo(
+		document.getElementById("opponent-cube"),
+		opponentScene,
+		opponentCamera
+	);
 	TWEEN.update();
 
 	requestAnimationFrame(render);
 }
 
+export function solve() {
+	(scene as THREE.Scene).remove(cube);
+	cube = new Cube("self");
+	scene.add(cube);
+}
+
 export function scramble(scram: String) {
+	(scene as THREE.Scene).remove(cube);
+	cube = new Cube("self");
+	scene.add(cube);
+
+	(opponentScene as THREE.Scene).remove(opponentCube);
+	opponentCube = new Cube("opponent");
+	opponentScene.add(opponentCube);
 	cube.applyMoves(scram.split(" ") as Move[], 0, 0);
 	opponentCube.applyMoves(scram.split(" ") as Move[], 0, 0);
 }
 
+export function checkSolved() {
+	const vec = new THREE.Vector3(1, 1, 1)
+	const c = (cube.children as Cubie[])[0] 
+	vec.applyEuler(c.rotation)
+
+	let solved = true;
+
+	for (const cubie of cube.children as Cubie[]) {
+		const newVec = new THREE.Vector3(1, 1, 1)
+		newVec.applyEuler(cubie.rotation)
+
+		if (!vec.equals(newVec)) solved = false;
+	}
+	console.log(solved);
+}
+
 export function applyMove(moves: Move[]) {
-  opponentCube.applyMoves(moves, 130, 90)
+	opponentCube.applyMoves(moves, 130, 90);
 }
 
 CANVAS.addEventListener("keypress", (ev) => {
 	if (Object.keys(KEYBOARD_MAPPINGS).includes(ev.key))
 		cube.applyMove(KEYBOARD_MAPPINGS[ev.key], 90);
-    writeTurn(KEYBOARD_MAPPINGS[ev.key])
-  
+	writeTurn(KEYBOARD_MAPPINGS[ev.key]);
 });
