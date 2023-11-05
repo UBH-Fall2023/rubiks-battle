@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Cube, Cubie, KEYBOARD_MAPPINGS, Move } from "./cube";
 import * as TWEEN from "../tween";
-import { writeTurn } from "../index";
+import { cubeIsSolved, writeTurn, updateTimers } from "../index";
 
 const CANVAS = document.querySelector("#c") as HTMLCanvasElement;
 
@@ -71,6 +71,9 @@ function render() {
 	);
 	TWEEN.update();
 
+	// updateTimers();
+
+
 	requestAnimationFrame(render);
 }
 
@@ -96,16 +99,20 @@ export function checkSolved() {
 	const vec = new THREE.Vector3(1, 1, 1)
 	const c = (cube.children as Cubie[])[0] 
 	vec.applyEuler(c.rotation)
+	vec.round();
 
 	let solved = true;
 
 	for (const cubie of cube.children as Cubie[]) {
 		const newVec = new THREE.Vector3(1, 1, 1)
 		newVec.applyEuler(cubie.rotation)
+		newVec.round()
 
-		if (!vec.equals(newVec)) solved = false;
+		if (!vec.equals(newVec) && cubie.faces.length >= 2) solved = false;
 	}
-	console.log(solved);
+	if (solved) {
+		cubeIsSolved()
+	}
 }
 
 export function applyMove(moves: Move[]) {

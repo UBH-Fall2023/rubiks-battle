@@ -44,13 +44,13 @@ let userRef;
 let code: String;
 let dueledUserRef;
 let dueledUserID;
-let dueledUserOldMoves: Move[];
+let dueledUserOldMoves: Move[] = [];
 let scramble;
-let userMoves: Move[];
+let userMoves: Move[] = [];
 let userTimes: { start?: Date; end?: Date };
 
 function reset() {
-	MAIN.solve()
+	MAIN.solve();
 	remove(ref(db, `/users/${userID}/racing`));
 	remove(ref(db, `/users/${userID}/scramble`));
 	remove(ref(db, `/users/${userID}/moves`));
@@ -87,11 +87,27 @@ export function writeTurn(move: Move) {
 	if (userMoves) {
 		userMoves.push(move);
 		set(ref(db, `/users/${userID}/moves`), userMoves);
+		console.log(userTimes)
 		if (!userTimes.start) {
-			userTimes.start = new Date()
+			userTimes.start = new Date();
 			set(ref(db, `/users/${userID}/time`), userTimes);
 		}
-		
+	}
+}
+// solve the cube
+export function cubeIsSolved() {
+	if (userMoves) {
+		userTimes.end = new Date();
+		set(ref(db, `/users/${userID}/time`), userTimes);
+	}
+}
+
+// update the timers 
+export function updateTimers() {
+	if (userTimes && userTimes.start) {
+		console.log("ba")
+		let timer = (document.getElementById("main-timer") as HTMLSpanElement)
+		timer.innerHTML = (new Date().getTime() - (userTimes.start).getTime()).toFixed(2)
 	}
 }
 
@@ -147,7 +163,7 @@ async function init() {
 			if (child.child("code").toJSON() == formData.get("code")) {
 				if (!child.hasChild("racing") && formData.get("code") != code) {
 					// Code for when you make a connection to another person
-					reset()
+					reset();
 					dueledUserRef = ref(db, `/users/${child.key}`);
 					set(ref(db, `/users/${child.key}/racing`), userID);
 					set(ref(db, `/users/${userID}/racing`), child.key);
