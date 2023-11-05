@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import * as TWEEN from "./tween";
+import * as TWEEN from "../tween";
 import { degToRad } from "three/src/math/MathUtils";
 
 const CUBIE_SIZE = 1;

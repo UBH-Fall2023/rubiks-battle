@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Cube, KEYBOARD_MAPPINGS, Move } from "./cube";
+import { Cube, KEYBOARD_MAPPINGS, Move } from "./three/cube";
 import * as TWEEN from './tween'
 
 const scene = new THREE.Scene();
@@ -17,7 +17,7 @@ document.body.appendChild(renderer.domElement);
 const cube = new Cube();
 scene.add(cube);
 
-camera.position.x = 7
+camera.position.x = 6
 camera.position.y = 7.5
 
 camera.lookAt(cube.position)

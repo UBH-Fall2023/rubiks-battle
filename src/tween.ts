@@ -1,5 +1,5 @@
 import { clamp } from "three/src/math/MathUtils";
-import { Cubie } from "./cube";
+import { Cubie } from "./three/cube";
 
 export let tweeners: tweener[] = [];
 
