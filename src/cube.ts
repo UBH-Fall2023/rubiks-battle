@@ -53,7 +53,6 @@ const AXES = {
 	y: new THREE.Vector3(0, 1, 0),
 	z: new THREE.Vector3(0, 0, 1),
 };
-
 const MOVES = {
 	// Normal Moves
 	R: { axis: "z", selector: (el) => el.offset.z < 0, rotation: 90 },
@@ -77,6 +76,35 @@ const MOVES = {
 	y: { axis: "y", selector: (el) => true, rotation: 90 },
 	z: { axis: "z", selector: (el) => true, rotation: -90 },
 	x: { axis: "x", selector: (el) => true, rotation: 90 },
+};
+export const KEYBOARD_MAPPINGS = {
+	"i": "R",
+	"k": "R'",
+	"d": "L",
+	"e": "L'",
+	"g": "F'",
+	"h": "F",
+	"o": "B'",
+	"w": "B",
+	"j": "U",
+	"f": "U'",
+	"s": "D",
+	"l": "D'",
+	"5": "M",
+	"x": "M'",
+	"u": "r",
+	"m": "r'",
+	"r": "l'",
+	"v": "l",
+	"z": "d",
+	"C": "u'",
+	",": "u",
+	"y": "z'",
+	"n": "z",
+	"a": "y",
+	";": "y'",
+	"q": "x",
+	"p": "x'",
 };
 
 export interface MoveData {
@@ -125,19 +153,25 @@ export class Cube extends THREE.Object3D {
 		(this.children as Cubie[]).filter(moveData.selector).forEach((cubie) => {
 			cubie.offset.applyAxisAngle(ax, deg);
 			cubie.offset.round();
+			
+			if (TWEEN.tweeners.some((el) => el.cubie == cubie)) {
+				TWEEN.resolve();
+			}
 
-			// really hacky solution to get rotation to work
-			// Basically it creates a duplicate rotation Euler and uses that value to set rotation
-			// const rotation =  new Cubie([], new THREE.Vector3()).copy(cubie).rotateOnWorldAxis(ax, deg)
-
-			TWEEN.Tween(cubie, duration, ax, deg);
+			if (duration != 0) {
+				TWEEN.Tween(cubie, duration, ax, deg);
+			} else {
+				cubie.rotateOnWorldAxis(ax, deg)
+			}
 		});
 	}
 
-	public async applyMoves(moves: Move[], delay: number = 400) {
+	public async applyMoves(moves: Move[], delay: number = 300, duration: number = 200) {
 		for (const move of moves) {
-			this.applyMove(move, delay / 2);
-			await wait(delay);
+			this.applyMove(move, duration);
+			if (delay != 0) {
+				await wait(delay);
+			}
 		}
 	}
 }

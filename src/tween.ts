@@ -1,7 +1,7 @@
 import { clamp } from "three/src/math/MathUtils";
 import { Cubie } from "./cube";
 
-let tweeners: tweener[] = [];
+export let tweeners: tweener[] = [];
 
 interface tweener {
 	cubie: Cubie;
@@ -39,7 +39,7 @@ export function update() {
 		t = easeInQuad(t);
 		const angle = tw.angle * t;
 
-		tw.cubie.rotateOnWorldAxis(tw.axis, tw.lastAngle ?? 0)
+		tw.cubie.rotateOnWorldAxis(tw.axis, tw.lastAngle ?? 0);
 		tw.cubie.rotateOnWorldAxis(tw.axis, angle);
 
 		tw.lastAngle = -angle;
@@ -47,6 +47,14 @@ export function update() {
 			tweeners = tweeners.filter((_, j) => i == j);
 		}
 	}
+}
+
+export function resolve() {
+	for (const tw of tweeners) {
+		tw.cubie.rotateOnWorldAxis(tw.axis, tw.lastAngle ?? 0);
+		tw.cubie.rotateOnWorldAxis(tw.axis, tw.angle);
+	}
+	tweeners = [];
 }
 
 function easeInQuad(x: number): number {

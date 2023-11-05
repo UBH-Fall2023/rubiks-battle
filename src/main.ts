@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Cube, Move } from "./cube";
+import { Cube, KEYBOARD_MAPPINGS, Move } from "./cube";
 import * as TWEEN from './tween.ts'
 
 const scene = new THREE.Scene();
@@ -22,17 +22,19 @@ camera.position.y = 4
 
 camera.lookAt(cube.position)
 
-function animate() {
-	requestAnimationFrame(animate);
-
-	// cube.rotation.x += 0.01;
-	// cube.rotation.y += 0.01;
+render();
+const Clock = new THREE.Clock()
+function render() {
+	requestAnimationFrame(render);
 
 	TWEEN.update()
 	
 	renderer.render(scene, camera);
 }
 
-animate();
+cube.applyMoves("D2 B R2 F2 U2 R2 U2 B' D2 U2 L2 U2 L D' U B L' F' U2 F2 R2".split(" ") as Move[], 0, 0)
 
-cube.applyMoves("D2 B R2 F2 U2 R2 U2 B' D2 U2 L2 U2 L D' U B L' F' U2 F2 R2".split(" ") as Move[], 1000)
+document.addEventListener("keypress", (ev) => {
+	if (Object.keys(KEYBOARD_MAPPINGS).includes(ev.key))
+	cube.applyMove(KEYBOARD_MAPPINGS[ev.key], 100)
+})
