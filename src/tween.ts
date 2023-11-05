@@ -4,8 +4,8 @@ import { Cubie } from "./cube";
 export let tweeners: tweener[] = [];
 
 interface tweener {
-	cubie: Cubie;
-	startTime: Date;
+	cubies: Cubie[];
+	startTime?: number;
 	duration: number;
 	axis: THREE.Vector3;
 	angle: number;
@@ -13,50 +13,51 @@ interface tweener {
 }
 
 export function Tween(
-	cubie: Cubie,
+	cubies: Cubie[],
 	duration: number,
 	axis: THREE.Vector3,
 	angle: number
 ) {
 	tweeners.push({
-		cubie: cubie,
+		cubies: cubies,
 		duration: duration,
 		axis: axis,
-		angle: angle,
-		startTime: new Date(),
+		angle: angle, 
+
 	});
 }
 
 export function update() {
-	let i = 0;
-	for (const tw of tweeners) {
-		i++;
-		// t is a number between 0 and 1
-		let t =
-			clamp(new Date().getTime() - tw.startTime.getTime(), 0, tw.duration) /
-			tw.duration;
-		// ease t
-		t = easeInQuad(t);
-		const angle = tw.angle * t;
-
-		tw.cubie.rotateOnWorldAxis(tw.axis, tw.lastAngle ?? 0);
-		tw.cubie.rotateOnWorldAxis(tw.axis, angle);
-
-		tw.lastAngle = -angle;
-		if (t == 1) {
-			tweeners = tweeners.filter((_, j) => i == j);
-		}
+  if (tweeners.length == 0) {
+    return;
+  }
+	const tw = tweeners[0];
+  if (!tw.startTime) tw.startTime = performance.now()
+	// t is a number between 0 and 1
+	let t = clamp((performance.now() - tw.startTime) / tw.duration, 0, 1);
+	// ease t
+	t = easeInQuad(t);
+  if (tweeners.length > 2) t = 1;
+	const angle = tw.angle * t;
+  for (const cubie of tw.cubies) {
+    cubie.rotateOnWorldAxis(tw.axis, angle);
+    cubie.rotateOnWorldAxis(tw.axis, tw.lastAngle ?? 0);
+  }
+  
+  tweeners[0].lastAngle = -angle;
+	if (t == 1) {
+		tweeners.shift()
 	}
 }
 
 export function resolve() {
-	for (const tw of tweeners) {
-		tw.cubie.rotateOnWorldAxis(tw.axis, tw.lastAngle ?? 0);
-		tw.cubie.rotateOnWorldAxis(tw.axis, tw.angle);
-	}
-	tweeners = [];
+	// for (const tw of tweeners) {
+	// 	tw.cubie.rotateOnWorldAxis(tw.axis, tw.lastAngle ?? 0);
+	// 	tw.cubie.rotateOnWorldAxis(tw.axis, tw.angle);
+	// }
+	// tweeners = [];
 }
 
 function easeInQuad(x: number): number {
-	return x;
+	return x
 }

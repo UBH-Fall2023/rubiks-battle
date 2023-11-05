@@ -1,7 +1,14 @@
 # To run locally
 1. clone git repo
-2. navigate to file
-3. ```npm install```
+2. Navigate to the file in the terminal: `cd path/to/file`
+3. Run the folowing
+    ```powershell
+    # install dependencies
+    npm install
+    # run the program
+    npx vite
+    ```
+
 
 
 # UB Hacking Fall 2023 Rules 

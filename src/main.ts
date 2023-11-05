@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { Cube, KEYBOARD_MAPPINGS, Move } from "./cube";
-import * as TWEEN from './tween.ts'
+import * as TWEEN from './tween'
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
-	100,
+	50,
 	window.innerWidth / window.innerHeight,
 	0.1,
 	1000
@@ -17,13 +17,12 @@ document.body.appendChild(renderer.domElement);
 const cube = new Cube();
 scene.add(cube);
 
-camera.position.x = 4
-camera.position.y = 4
+camera.position.x = 7
+camera.position.y = 7.5
 
 camera.lookAt(cube.position)
 
 render();
-const Clock = new THREE.Clock()
 function render() {
 	requestAnimationFrame(render);
 

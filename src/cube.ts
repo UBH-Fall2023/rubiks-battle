@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import * as TWEEN from "./tween.ts";
+import * as TWEEN from "./tween";
 import { degToRad } from "three/src/math/MathUtils";
 
 const CUBIE_SIZE = 1;
@@ -55,56 +55,56 @@ const AXES = {
 };
 const MOVES = {
 	// Normal Moves
-	R: { axis: "z", selector: (el) => el.offset.z < 0, rotation: 90 },
-	L: { axis: "z", selector: (el) => el.offset.z > 0, rotation: -90 },
-	F: { axis: "x", selector: (el) => el.offset.x > 0, rotation: -90 },
-	B: { axis: "x", selector: (el) => el.offset.x < 0, rotation: 90 },
-	U: { axis: "y", selector: (el) => el.offset.y > 0, rotation: -90 },
-	D: { axis: "y", selector: (el) => el.offset.y < 0, rotation: 90 },
+	R: { axis: "z", selector: (el) => el.offset.z < 0, rotation: 1 },
+	L: { axis: "z", selector: (el) => el.offset.z > 0, rotation: -1 },
+	F: { axis: "x", selector: (el) => el.offset.x > 0, rotation: -1 },
+	B: { axis: "x", selector: (el) => el.offset.x < 0, rotation: 1 },
+	U: { axis: "y", selector: (el) => el.offset.y > 0, rotation: -1 },
+	D: { axis: "y", selector: (el) => el.offset.y < 0, rotation: 1 },
 	// Fat moves
-	r: { axis: "z", selector: (el) => el.offset.z <= 0, rotation: 90 },
-	l: { axis: "z", selector: (el) => el.offset.z >= 0, rotation: -90 },
-	f: { axis: "x", selector: (el) => el.offset.x >= 0, rotation: -90 },
-	b: { axis: "x", selector: (el) => el.offset.x <= 0, rotation: 90 },
-	u: { axis: "y", selector: (el) => el.offset.y >= 0, rotation: -90 },
-	d: { axis: "y", selector: (el) => el.offset.y <= 0, rotation: 90 },
+	r: { axis: "z", selector: (el) => el.offset.z <= 0, rotation: 1 },
+	l: { axis: "z", selector: (el) => el.offset.z >= 0, rotation: -1 },
+	f: { axis: "x", selector: (el) => el.offset.x >= 0, rotation: -1 },
+	b: { axis: "x", selector: (el) => el.offset.x <= 0, rotation: 1 },
+	u: { axis: "y", selector: (el) => el.offset.y >= 0, rotation: -1 },
+	d: { axis: "y", selector: (el) => el.offset.y <= 0, rotation: 1 },
 	// Slice moves
-	E: { axis: "y", selector: (el) => el.offset.y == 0, rotation: 90 },
-	M: { axis: "z", selector: (el) => el.offset.z == 0, rotation: -90 },
-	S: { axis: "x", selector: (el) => el.offset.x == 0, rotation: 90 },
+	E: { axis: "y", selector: (el) => el.offset.y == 0, rotation: 1 },
+	M: { axis: "z", selector: (el) => el.offset.z == 0, rotation: -1 },
+	S: { axis: "x", selector: (el) => el.offset.x == 0, rotation: 1 },
 	// Rotations
-	y: { axis: "y", selector: (el) => true, rotation: 90 },
-	z: { axis: "z", selector: (el) => true, rotation: -90 },
-	x: { axis: "x", selector: (el) => true, rotation: 90 },
+	y: { axis: "y", selector: (el) => true, rotation: 1 },
+	z: { axis: "z", selector: (el) => true, rotation: -1 },
+	x: { axis: "x", selector: (el) => true, rotation: 1 },
 };
 export const KEYBOARD_MAPPINGS = {
-	"i": "R",
-	"k": "R'",
-	"d": "L",
-	"e": "L'",
-	"g": "F'",
-	"h": "F",
-	"o": "B'",
-	"w": "B",
-	"j": "U",
-	"f": "U'",
-	"s": "D",
-	"l": "D'",
+	i: "R",
+	k: "R'",
+	d: "L",
+	e: "L'",
+	g: "F'",
+	h: "F",
+	o: "B'",
+	w: "B",
+	j: "U",
+	f: "U'",
+	s: "D",
+	l: "D'",
 	"5": "M",
-	"x": "M'",
-	"u": "r",
-	"m": "r'",
-	"r": "l'",
-	"v": "l",
-	"z": "d",
-	"C": "u'",
+	x: "M'",
+	u: "r",
+	m: "r'",
+	r: "l'",
+	v: "l",
+	z: "d",
+	c: "u'",
 	",": "u",
-	"y": "z'",
-	"n": "z",
-	"a": "y",
+	y: "z'",
+	n: "z",
+	a: "y",
 	";": "y'",
-	"q": "x",
-	"p": "x'",
+	q: "x",
+	p: "x'",
 };
 
 export interface MoveData {
@@ -144,29 +144,32 @@ export class Cube extends THREE.Object3D {
 	public applyMove(move: Move, duration: number) {
 		const moveData = MOVES[move[0]];
 		// if move has ' rotate opposite way, if move has "2" rotate twice
-		const deg = degToRad(
+		const deg =
 			moveData.rotation *
-				(move.endsWith("'") ? -1 : 1) *
-				(move.endsWith("2") ? 2 : 1)
-		);
+			(Math.PI / 2) *
+			(move.endsWith("'") ? -1 : 1) *
+			(move.endsWith("2") ? 2 : 1);
+
 		const ax = AXES[moveData.axis];
+    if (duration != 0) {
+      TWEEN.Tween(this.children.filter(moveData.selector) as Cubie[], duration, ax, deg);
+    }
 		(this.children as Cubie[]).filter(moveData.selector).forEach((cubie) => {
 			cubie.offset.applyAxisAngle(ax, deg);
 			cubie.offset.round();
-			
-			if (TWEEN.tweeners.some((el) => el.cubie == cubie)) {
-				TWEEN.resolve();
-			}
 
-			if (duration != 0) {
-				TWEEN.Tween(cubie, duration, ax, deg);
-			} else {
-				cubie.rotateOnWorldAxis(ax, deg)
+			if (duration == 0) {
+				cubie.rotateOnWorldAxis(ax, deg);
 			}
 		});
+
 	}
 
-	public async applyMoves(moves: Move[], delay: number = 300, duration: number = 200) {
+	public async applyMoves(
+		moves: Move[],
+		delay: number = 300,
+		duration: number = 200
+	) {
 		for (const move of moves) {
 			this.applyMove(move, duration);
 			if (delay != 0) {
