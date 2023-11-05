@@ -122,8 +122,11 @@ function wait(time) {
 }
 
 export class Cube extends THREE.Object3D {
-	public constructor() {
+	public readonly user: "self" | "opponent";
+
+	public constructor(user: "self" | "opponent") {
 		super();
+		this.user = user;
 		let i = 0;
 		for (let y = -1; y <= 1; y++) {
 			for (let x = -1; x <= 1; x++) {
@@ -151,9 +154,15 @@ export class Cube extends THREE.Object3D {
 			(move.endsWith("2") ? 2 : 1);
 
 		const ax = AXES[moveData.axis];
-    if (duration != 0) {
-      TWEEN.Tween(this.children.filter(moveData.selector) as Cubie[], duration, ax, deg);
-    }
+		if (duration != 0) {
+			TWEEN.Tween(
+				this.children.filter(moveData.selector) as Cubie[],
+				duration,
+				ax,
+				deg,
+				this.user
+			);
+		}
 		(this.children as Cubie[]).filter(moveData.selector).forEach((cubie) => {
 			cubie.offset.applyAxisAngle(ax, deg);
 			cubie.offset.round();
@@ -162,7 +171,6 @@ export class Cube extends THREE.Object3D {
 				cubie.rotateOnWorldAxis(ax, deg);
 			}
 		});
-
 	}
 
 	public async applyMoves(
@@ -171,6 +179,7 @@ export class Cube extends THREE.Object3D {
 		duration: number = 200
 	) {
 		for (const move of moves) {
+      if (move == undefined) continue;
 			this.applyMove(move, duration);
 			if (delay != 0) {
 				await wait(delay);

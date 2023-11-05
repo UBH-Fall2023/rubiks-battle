@@ -1,12 +1,11 @@
 import * as THREE from "three";
 import { Cube, KEYBOARD_MAPPINGS, Move } from "./cube";
 import * as TWEEN from "../tween";
-const CANVAS = document.querySelector("#c") as HTMLCanvasElement;
+import { writeTurn } from "../index";
 
-CANVAS.addEventListener("keypress", (ev) => {
-	if (Object.keys(KEYBOARD_MAPPINGS).includes(ev.key))
-		cube.applyMove(KEYBOARD_MAPPINGS[ev.key], 90);
-});
+
+
+const CANVAS = document.querySelector("#c") as HTMLCanvasElement;
 
 const renderer = new THREE.WebGLRenderer({
 	alpha: true,
@@ -29,8 +28,8 @@ const opponentCamera = new THREE.PerspectiveCamera(
 	1000
 );
 
-const cube = new Cube();
-const opponentCube = new Cube();
+const cube = new Cube("self");
+const opponentCube = new Cube("opponent");
 scene.add(cube);
 opponentScene.add(opponentCube);
 
@@ -67,11 +66,7 @@ function render() {
 	renderer.setScissorTest(true);
 
 	renderSceneInfo(document.getElementById("main-cube"), scene, camera);
-	renderSceneInfo(
-		document.getElementById("opponent-cube"),
-		opponentScene,
-		opponentCamera
-	);
+	renderSceneInfo(document.getElementById("opponent-cube"), opponentScene, opponentCamera);
 	TWEEN.update();
 
 	requestAnimationFrame(render);
@@ -79,6 +74,16 @@ function render() {
 
 export function scramble(scram: String) {
 	cube.applyMoves(scram.split(" ") as Move[], 0, 0);
+	opponentCube.applyMoves(scram.split(" ") as Move[], 0, 0);
 }
 
-export function applyMove() {}
+export function applyMove(moves: Move[]) {
+  opponentCube.applyMoves(moves, 130, 90)
+}
+
+CANVAS.addEventListener("keypress", (ev) => {
+	if (Object.keys(KEYBOARD_MAPPINGS).includes(ev.key))
+		cube.applyMove(KEYBOARD_MAPPINGS[ev.key], 90);
+    writeTurn(KEYBOARD_MAPPINGS[ev.key])
+  
+});

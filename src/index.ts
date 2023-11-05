@@ -11,6 +11,8 @@ import {
 	onChildRemoved,
 	onValue,
 } from "firebase/database";
+import * as MAIN from "./three/main";
+import * as SCRAMBLER from "cube-scramble.js";
 import { Move } from "./three/cube";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -35,7 +37,9 @@ let userRef;
 let code: String;
 let dueledUserRef;
 let dueledUserID;
+let dueledUserOldMoves: Move[] = [];
 let scramble;
+let yourMoves: Move[] = [];
 
 const form = document.getElementById("form") as HTMLFormElement;
 
@@ -51,46 +55,63 @@ auth.onAuthStateChanged((user) => {
 		userID = user.uid;
 		code = user.uid.slice(0, 6);
 		userRef = ref(db, `users/${userID}`);
-		console.log(userRef);
 
 		set(userRef, {
 			id: userID,
 			code: code,
-			moves: null,
-			racing: null,
-      scramble: null,
 		});
 		onDisconnect(userRef).remove();
 		init();
 	}
 });
 
+// you do a turn
+export function writeTurn(move: Move) {
+	yourMoves.push(move)
+	set(ref(db, `/users/${userID}/moves`), yourMoves);
+}
+
 async function init() {
+	// Update racing in case the dueled user leaves
+	onChildRemoved(ref(db, "/users/"), (snapshot) => {
+		if (snapshot.val().racing == userID) {
+			remove(ref(db, `/users/${userID}/racing`));
+			remove(ref(db, `/users/${userID}/scramble`));
+			remove(ref(db, `/users/${userID}/moves`));
+			dueledUserID = null;
+			dueledUserRef = null;
+      dueledUserOldMoves = [];
+      yourMoves = [];
+			scramble = null;
+			(document.getElementById("opponent-cube") as HTMLSpanElement).style.display =
+				"none";
+		}
+	});
 
-// Update racing in case the dueled user leaves
-onChildRemoved(ref(db, "/users/"), (snapshot) => {
-	console.log(snapshot.val());
-	if (snapshot.val().racing == userID) {
-		remove(ref(db, `/users/${userID}/racing`));
-		remove(ref(db, `/users/${userID}/scramble`));
-		remove(ref(db, `/users/${userID}/moves`));
-    dueledUserID = null;
-    dueledUserRef = null;
-    scramble = null;
-	}
-});
+	// Hide form if you are dueling someone
+	onValue(ref(db, `/users/${userID}/racing`), (snapshot) => {
+		form.querySelectorAll("input").forEach((el) => {
+			el.hidden = snapshot.val();
+		});
+		(document.getElementById("opponent-cube") as HTMLSpanElement).style.display =
+			snapshot.val() ? "block" : "hidden";
 
-// Hide form if you are dueling someone
-onValue(ref(db, `/users/${userID}/racing`), (snapshot) => {
-    form.querySelectorAll("input").forEach((el) => {
-      el.hidden = snapshot.val();
-    })
-});
+		dueledUserID = snapshot.val();
 
-//
-onValue(ref(db, `/users/${userID}/scramble`), (snapshot) => {
-  scramble = snapshot.val()
-});
+		// opponent does a turn
+		onValue(ref(db, `/users/${dueledUserID}/moves`), (snapshot) => {
+			if (!snapshot.exists()) return;
+      const moves = (snapshot.val() as Move[]).slice(dueledUserOldMoves.length - 1)
+			MAIN.applyMove(moves as Move[]);
+		}); 
+	});
+
+	// scramblke cubes when you get scramble
+	onValue(ref(db, `/users/${userID}/scramble`), (snapshot) => {
+		if (!snapshot.exists()) return;
+		scramble = snapshot.val();
+		MAIN.scramble(scramble);
+	});
 
 	const allUserRef = ref(db, `users`);
 	(
@@ -104,17 +125,13 @@ onValue(ref(db, `/users/${userID}/scramble`), (snapshot) => {
 		userList.forEach((child) => {
 			if (child.child("code").toJSON() == formData.get("code")) {
 				if (!child.hasChild("racing") && formData.get("code") != code) {
-          // Code for when you make a connection to another person
+					// Code for when you make a connection to another person
 					dueledUserRef = ref(db, `/users/${child.key}`);
-					dueledUserID = child.key;
 					set(ref(db, `/users/${child.key}/racing`), userID);
 					set(ref(db, `/users/${userID}/racing`), child.key);
-          const s = scramble("3x3").join(" ");
-          set(ref(db, `/users/${child.key}/scramble`), s)
-          set(ref(db, `/users/${userID}/scramble`), s)
-
-          set(ref(db, `/users/${child.key}/moves`), "")
-          set(ref(db, `/users/${userID}/moves`), "")
+					const s = SCRAMBLER.scramble("3x3").join(" ");
+					set(ref(db, `/users/${child.key}/scramble`), s);
+					set(ref(db, `/users/${userID}/scramble`), s);
 				}
 			}
 		});
@@ -123,4 +140,3 @@ onValue(ref(db, `/users/${userID}/scramble`), (snapshot) => {
 		}
 	});
 }
-
