@@ -35,8 +35,6 @@ export function update() {
   if (!tw.startTime) tw.startTime = performance.now()
 	// t is a number between 0 and 1
 	let t = clamp((performance.now() - tw.startTime) / tw.duration, 0, 1);
-	// ease t
-	t = easeInQuad(t);
   if (tweeners.length > 2) t = 1;
 	const angle = tw.angle * t;
   for (const cubie of tw.cubies) {
@@ -48,16 +46,4 @@ export function update() {
 	if (t == 1) {
 		tweeners.shift()
 	}
-}
-
-export function resolve() {
-	// for (const tw of tweeners) {
-	// 	tw.cubie.rotateOnWorldAxis(tw.axis, tw.lastAngle ?? 0);
-	// 	tw.cubie.rotateOnWorldAxis(tw.axis, tw.angle);
-	// }
-	// tweeners = [];
-}
-
-function easeInQuad(x: number): number {
-	return x
 }

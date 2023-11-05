@@ -72,8 +72,11 @@ onChildRemoved(ref(db, "/users/"), (snapshot) => {
 	console.log(snapshot.val());
 	if (snapshot.val().racing == userID) {
 		remove(ref(db, `/users/${userID}/racing`));
+		remove(ref(db, `/users/${userID}/scramble`));
+		remove(ref(db, `/users/${userID}/moves`));
     dueledUserID = null;
     dueledUserRef = null;
+    scramble = null;
 	}
 });
 
@@ -82,7 +85,11 @@ onValue(ref(db, `/users/${userID}/racing`), (snapshot) => {
     form.querySelectorAll("input").forEach((el) => {
       el.hidden = snapshot.val();
     })
+});
 
+//
+onValue(ref(db, `/users/${userID}/scramble`), (snapshot) => {
+  scramble = snapshot.val()
 });
 
 	const allUserRef = ref(db, `users`);
@@ -102,7 +109,12 @@ onValue(ref(db, `/users/${userID}/racing`), (snapshot) => {
 					dueledUserID = child.key;
 					set(ref(db, `/users/${child.key}/racing`), userID);
 					set(ref(db, `/users/${userID}/racing`), child.key);
-          scramble = scramble("3x3").join(" ");
+          const s = scramble("3x3").join(" ");
+          set(ref(db, `/users/${child.key}/scramble`), s)
+          set(ref(db, `/users/${userID}/scramble`), s)
+
+          set(ref(db, `/users/${child.key}/moves`), "")
+          set(ref(db, `/users/${userID}/moves`), "")
 				}
 			}
 		});
