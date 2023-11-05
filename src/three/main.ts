@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { Cube, KEYBOARD_MAPPINGS, Move } from "./three/cube";
-import * as TWEEN from './tween'
+import { Cube, KEYBOARD_MAPPINGS, Move } from "./cube";
+import * as TWEEN from '../tween'
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
