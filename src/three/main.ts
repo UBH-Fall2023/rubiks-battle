@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { Cube, KEYBOARD_MAPPINGS, Move } from "./cube";
-import * as TWEEN from '../tween'
+import * as TWEEN from "../tween";
+import { scramble } from "cube-scramble.js";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -10,30 +11,40 @@ const camera = new THREE.PerspectiveCamera(
 	1000
 );
 
-const renderer = new THREE.WebGLRenderer();
+const canvas = document.querySelector("#c") as HTMLCanvasElement;
+
+canvas.addEventListener("keypress", (ev) => {
+	if (Object.keys(KEYBOARD_MAPPINGS).includes(ev.key))
+		cube.applyMove(KEYBOARD_MAPPINGS[ev.key], 90);
+});
+
+const renderer = new THREE.WebGLRenderer({
+	alpha: true,
+	premultipliedAlpha: false,
+	canvas: canvas,
+});
+
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
 
 const cube = new Cube();
 scene.add(cube);
 
-camera.position.x = 6
-camera.position.y = 7.5
+camera.position.x = 6;
+camera.position.y = 7.5;
 
-camera.lookAt(cube.position)
+camera.lookAt(cube.position);
 
 render();
 function render() {
+	const canvas = renderer.domElement;
+	camera.aspect = canvas.clientWidth / canvas.clientHeight;
+	camera.updateProjectionMatrix();
+
 	requestAnimationFrame(render);
 
-	TWEEN.update()
-	
+	TWEEN.update();
+
 	renderer.render(scene, camera);
 }
 
-cube.applyMoves("D2 B R2 F2 U2 R2 U2 B' D2 U2 L2 U2 L D' U B L' F' U2 F2 R2".split(" ") as Move[], 0, 0)
-
-document.addEventListener("keypress", (ev) => {
-	if (Object.keys(KEYBOARD_MAPPINGS).includes(ev.key))
-	cube.applyMove(KEYBOARD_MAPPINGS[ev.key], 100)
-})
+cube.applyMoves(scramble("3x3") as Move[], 0, 0);

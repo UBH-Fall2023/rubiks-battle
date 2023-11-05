@@ -1,0 +1,67 @@
+@import url("https://fonts.googleapis.com/css?family=Rubik");
+
+html,
+body {
+	margin: 0;
+	height: 100%;
+  background-color: #181c1f;
+}
+
+#c {
+	width: 100% !important;
+	height: 100% !important;
+	display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.form {
+  z-index: 1 ;
+  position: absolute;
+  margin: 1rem;
+  padding: 1rem;
+  background-color: #ffffff1f;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Rubik', sans-serif;
+  color: #aaa;
+  font-weight: bold;
+  gap: 0.5rem;
+  width: fit-content;
+}
+
+.form input[type="text"] {
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 18px;
+  height: 44px;
+  border-radius: 8px;
+  outline: 0;
+  outline: 0;
+  padding-left: 0.5em;
+  border: 3px solid #777777;
+  width: 150px;
+}
+.form span {
+  font-style: italic;
+}
+.form input[type="text"]:focus {
+  border-color: rgba(6, 102, 213, 0.7);
+}
+
+.form input[type="submit"] {
+  font-family: inherit;
+  color: inherit;
+  border-radius: 5px;
+  background-color: #00000055;
+  border: none;
+  padding: 0.7rem 0.8rem;
+  transition: 200ms;
+}
+
+.form input[type="submit"]:hover {
+  background-color: rgba(145, 4, 4, 0.333);
+}

@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>My first three.js app</title>
-		<style>
-			body { margin: 0; }
-		</style>
-	</head>
-	<body>
-		<script type="module" src="/src/three/main.ts"></script>
-    <script type="module" src="/src/index.ts"></script>
-	</body>
+
+<head>
+  <meta charset="utf-8">
+  <title>My first three.js app</title>
+  <link rel="stylesheet" href="index.css">
+
+</head>
+
+<body>
+  <canvas id="c" tabindex="0"></canvas>
+  <form id="form" class="form">
+    <span id="code"></span>
+    <input type="text" id="input-code" name="code" placeholder="Code" tabindex="1" maxlength="6" autocomplete="off">
+    <input type="submit" value="Duel">
+  </form>
+  <script type="module" src="/src/three/main.ts"></script>
+  <script type="module" src="/src/index.ts"></script>
+</body>
+
 </html>
