@@ -1,4 +1,47 @@
-# To run locally
+## Inspiration
+https://cstimer.net/ has a virtual cube that was the main inspiration.
+
+## How to use 
+The rubik's cube is controlled with the keyboard. Pres I/K to do R/R', etc. Full list of moves:
+```
+Rubik's cube notation - Key to press
+R R' - I & K
+L L' - D & E
+F F' - G & H
+U U' - J & F
+D D' - S & L
+M M' - 5 & X
+
+Wide R moves - U & M
+Wide L moves - R & V
+Wide D moves - Z
+Wide U moves - C & ,
+
+X rotation - T & B
+Y rotation - A & ;
+Z rotation - Q & P
+```
+
+## What it does
+Virtual rubik's cube you can control with your keyboard. You can also race against others in realtime.
+
+## How we built it
+I used three.js for the cube and Firebase for the multiplayer. Firebase is certainly not the best solution, but it works so whatever.
+
+## Challenges we ran into
+I struggled for like 3 hours getting the rotation of the cube to work and was buried in quaternion math.
+I also had a hard time with detecting if it was solved. While I did figure it out in the end, I ran out of time to implement a timer, so it was useless.
+Setting up Firebase also proved challenging.
+
+## Accomplishments that we're proud of
+The movement feels pretty fluid and the realtime multiplayer aspect is cool.
+
+
+---
+
+
+
+#### To run locally
 1. clone git repo
 2. Navigate to the file in the terminal: `cd path/to/file`
 3. Run the folowing
@@ -8,20 +51,5 @@
     # run the program
     npx vite
     ```
-
-
-
-# UB Hacking Fall 2023 Rules 
-- Teams can consist of between 1 and 4 people.
-- To have your submission be considered for judging, you must submit a 2-5 minute video along with your project. Try to keep it as concise as possible!
-- The projects submitted for judging cannot have been started prior to the start of the hackathon. In other words, teams can plan their projects in great detail, but they cannot begin writing code until they arrive at the hackathon.
-- Additionally, we are partnering with MLH this year, which means that our hackers must follow their code of conduct which can be found below.
-- Any and all resources used must be open source and specified in either the project, or the project description.
-- Your project must be publically available and under source control in this repository.
-- Prior to submitting to devpost, your project must be fully committed and pushed to this repository.
-- The link to this repository must be available on your devpost submission.
-- Projects can not have been submitted to another event, including other hackathons this weekend.
-- [Code of Conduct](https://drive.google.com/file/d/1RH_TtRu6EOHSbOoiSj2h1Q4jswtVILzE/view)
-- [MLH Code of Conduct](https://static.mlh.io/docs/mlh-code-of-conduct.pdf)
 
 
