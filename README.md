@@ -1,5 +1,8 @@
-## Inspiration
-https://cstimer.net/ has a virtual cube that was the main inspiration.
+# [Click this Link to go to game](https://hackathon-cube.web.app/)
+
+
+
+
 
 ## How to use 
 The rubik's cube is controlled with the keyboard. Pres I/K to do R/R', etc. Full list of moves:
@@ -25,16 +28,19 @@ Z rotation - Q & P
 ## What it does
 Virtual rubik's cube you can control with your keyboard. You can also race against others in realtime.
 
-## How we built it
+## How I built it
 I used three.js for the cube and Firebase for the multiplayer. Firebase is certainly not the best solution, but it works so whatever.
 
-## Challenges we ran into
+## Challenges I ran into
 I struggled for like 3 hours getting the rotation of the cube to work and was buried in quaternion math.
 I also had a hard time with detecting if it was solved. While I did figure it out in the end, I ran out of time to implement a timer, so it was useless.
 Setting up Firebase also proved challenging.
 
-## Accomplishments that we're proud of
+## Accomplishments that I'm proud of
 The movement feels pretty fluid and the realtime multiplayer aspect is cool.
+
+## Inspiration
+https://cstimer.net/ has a virtual cube that was the main inspiration.
 
 
 ---
