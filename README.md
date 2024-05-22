@@ -5,6 +5,7 @@
 
 
 ## How to use 
+#### Controls
 The rubik's cube is controlled with the keyboard. Pres I/K to do R/R', etc. Full list of moves:
 ```
 Rubik's cube notation - Key to press
@@ -24,6 +25,9 @@ X rotation - T & B
 Y rotation - A & ;
 Z rotation - Q & P
 ```
+#### Multiplayer
+To play multiplayer, one person will have a code on the top left of their screen. The other player can type this code into the `Code` box, then press duel. You will then be able to see the moves the other player is making in real time
+
 
 ## What it does
 Virtual rubik's cube you can control with your keyboard. You can also race against others in realtime.
@@ -51,7 +55,7 @@ https://cstimer.net/ has a virtual cube that was the main inspiration.
 1. clone git repo
 2. Navigate to the file in the terminal: `cd path/to/file`
 3. Run the folowing
-    ```powershell
+    ```bash
     # install dependencies
     npm install
     # run the program
