@@ -1,7 +1,7 @@
 # [Click this Link to go to game](https://hackathon-cube.web.app/)
 
 
-
+Made in 24 hours for a hackathon
 
 
 ## How to use 
